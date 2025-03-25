@@ -4,11 +4,58 @@ import chalk from 'chalk';
 import { models, humanModel } from './models';
 import { WordGenerator } from './generator';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as readline from 'readline';
 const notifier = require('node-notifier');
 const keypress = require('keypress');
 
 // Load environment variables
 dotenv.config();
+
+// Function to prompt for and save API key
+async function promptForApiKey(): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  console.log('\nOpenRouter API key is required to run this application.');
+  console.log('You can get one by signing up at https://openrouter.ai\n');
+  
+  return new Promise((resolve) => {
+    rl.question('Please paste your OpenRouter API key: ', (apiKey) => {
+      rl.close();
+      
+      // Save to .env file
+      const envPath = path.resolve(process.cwd(), '.env');
+      let envContent = '';
+      
+      // Read existing .env if it exists
+      if (fs.existsSync(envPath)) {
+        envContent = fs.readFileSync(envPath, 'utf8');
+      }
+      
+      // Check if OPENROUTER_API_KEY is already in the file
+      if (envContent.includes('OPENROUTER_API_KEY=')) {
+        // Replace existing key
+        envContent = envContent.replace(
+          /OPENROUTER_API_KEY=.*/,
+          `OPENROUTER_API_KEY=${apiKey}`
+        );
+      } else {
+        // Add new key
+        envContent += `\nOPENROUTER_API_KEY=${apiKey}\n`;
+      }
+      
+      // Write back to .env
+      fs.writeFileSync(envPath, envContent);
+      console.log('\nAPI key saved to .env file!\n');
+      
+      resolve(apiKey);
+    });
+  });
+}
 
 // Function to get human input with space key as submission
 async function getHumanWordWithSpace(): Promise<string> {
@@ -242,8 +289,20 @@ async function main() {
   console.log(generator.getCurrentText());
 }
 
-// Run the main function
-main().catch(error => {
+// Check for OpenRouter API key and get it if not present
+async function checkApiKey() {
+  // Check if we have an API key
+  if (!process.env.OPENROUTER_API_KEY) {
+    // Prompt for API key
+    process.env.OPENROUTER_API_KEY = await promptForApiKey();
+  }
+  
+  // Run the main function after we have the API key
+  await main();
+}
+
+// Run the program
+checkApiKey().catch(error => {
   console.error(chalk.red('Error:'), error.message);
   process.exit(1);
 });

@@ -6,14 +6,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Get environment variables
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const ENABLE_THE_END = process.env.THE_END === '1';
 const VERBOSE = process.env.VERBOSE === '1';
-
-if (!OPENROUTER_API_KEY) {
-  console.error('Error: OPENROUTER_API_KEY is not set in the .env file');
-  process.exit(1);
-}
 
 export class WordGenerator {
   private currentText: string = '';
@@ -89,6 +83,9 @@ export class WordGenerator {
     }
     
     try {
+      // Get the API key (should be already set by now)
+      const apiKey = process.env.OPENROUTER_API_KEY;
+      
       // Base prompt instructions
       let instructions = `Continue the following text with ONLY ONE SINGLE WORD as it would naturally appear in the sentence. Include ONLY punctuation that would be PART of the sentence structure - like commas, periods, quote marks, etc. only if grammatically needed at this point in the sentence. Do not add any explanatory text or extra words.`;
       
@@ -133,7 +130,7 @@ Next word:`;
         payload,
         {
           headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Authorization': `Bearer ${apiKey}`,
             'HTTP-Referer': 'https://github.com/yourusername/owaat',
             'X-Title': 'One Word At A Time Story Generator'
           }
