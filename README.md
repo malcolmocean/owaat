@@ -2,6 +2,9 @@
 
 A command-line tool that has multiple LLM models take turns to generate a story, one word at a time. Each model has its own color in the output.
 
+![OWAAT Demo](./owaat1.png)
+*Example of different AI models collaborating on a story, each contributing a single word at a time with different colors.*
+
 ## How it Works
 
 This tool connects to various AI language models (LLMs). Each model contributes one word to a collaborative story, with each model's contributions shown in a unique color.
