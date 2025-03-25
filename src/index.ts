@@ -24,8 +24,11 @@ async function main() {
   });
   console.log();
   
-  // Initialize the generator
-  const generator = new WordGenerator(models);
+  // Shuffle the models array to randomize which model goes first
+  const shuffledModels = [...models].sort(() => Math.random() - 0.5);
+  
+  // Initialize the generator with shuffled models
+  const generator = new WordGenerator(shuffledModels);
   
   // Generate words one at a time
   console.log(chalk.bold('Generated Story:'));

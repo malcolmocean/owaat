@@ -31,6 +31,7 @@ export class WordGenerator {
 
   /**
    * Extracts a single word from an LLM response
+   * Allows punctuation where appropriate
    */
   private extractWord(text: string): string {
     // Remove any leading/trailing whitespace
@@ -42,12 +43,9 @@ export class WordGenerator {
     // If we have multiple words, just return the first one
     let word = words[0] || '';
     
-    // Clean up any special characters at the beginning
-    word = word.replace(/^[.,;:!?"'(){}\[\]]+/, '');
-    
-    // If the word is empty after cleanup, return a default word
+    // If the word is empty, return empty string to trigger model failure handling
     if (!word) {
-      word = 'the';
+      return '';
     }
     
     return word;
@@ -61,7 +59,7 @@ export class WordGenerator {
     
     try {
       // Construct a prompt asking for a single word continuation
-      const prompt = `Continue the following text with ONLY ONE SINGLE WORD. Do not use punctuation or multiple words. Just one word.
+      const prompt = `Continue the following text with ONLY ONE SINGLE WORD. You may include appropriate punctuation if needed (like commas, periods, etc.) but no more than one word. The word should make sense in the context of the story.
       
 Current text: "${this.currentText}"
 
@@ -113,20 +111,16 @@ Next word:`;
     } catch (error) {
       console.error(`Error calling ${currentModel.name} API:`, error);
       
-      // Fallback to a random word if API call fails
-      const fallbackWords = ['the', 'a', 'one', 'person', 'place', 'thing'];
-      const randomIndex = Math.floor(Math.random() * fallbackWords.length);
-      const fallbackWord = fallbackWords[randomIndex];
+      // Move to the next model
+      this.turn++;
       
-      // Update current text with fallback word
-      if (this.currentText === '') {
-        this.currentText = fallbackWord.charAt(0).toUpperCase() + fallbackWord.slice(1);
-      } else {
-        this.currentText += ' ' + fallbackWord;
+      // Try all models before giving up
+      if (this.models.every((_, index) => index + this.turn % this.models.length >= this.models.length)) {
+        throw new Error("All models failed to generate a word. The application cannot continue.");
       }
       
-      this.turn++;
-      return fallbackWord;
+      // Recursively try the next model
+      return this.generateNextWord();
     }
   }
   
