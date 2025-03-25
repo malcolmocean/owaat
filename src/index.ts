@@ -204,8 +204,8 @@ async function main() {
           process.stdout.write('\b'); // Move cursor back again
         }
         
-        // Show the word with color
-        process.stdout.write(humanModel.colorFn(nextWord + ' '));
+        // Show the word with color (safely handle null case)
+        process.stdout.write(humanModel.colorFn((nextWord || '') + ' '));
         wordCount++;
       }
     } else {
@@ -221,14 +221,14 @@ async function main() {
         process.stdout.write('\b\b');
         
         // Show the end
-        process.stdout.write(currentModel.colorFn(nextWord));
+        process.stdout.write(currentModel.colorFn(nextWord || ''));
         isStoryEnded = true;
       } else {
         // Remove the thinking indicator
         process.stdout.write('\b\b');
         
-        // Display the word with the model's color
-        process.stdout.write(currentModel.colorFn(nextWord + ' '));
+        // Display the word with the model's color (safely handle null case)
+        process.stdout.write(currentModel.colorFn((nextWord || '') + ' '));
         wordCount++;
       }
       
