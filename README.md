@@ -37,6 +37,12 @@ INITIAL_TEXT="In a galaxy far, far away" THE_END=1 npm run start
 
 # Run in verbose mode to see prompts and responses
 VERBOSE=1 npm run start
+
+# Run in interactive mode where you take turns with the AI models
+HUMAN=1 npm run start
+
+# Combine multiple options
+HUMAN=1 THE_END=1 INITIAL_TEXT="The spaceship landed" npm run start
 ```
 
 ## Configuration
@@ -52,6 +58,7 @@ You can customize the application by modifying these files:
 - `THE_END=1` (optional) - Enable models to end the story with "THE END." when they think it has reached a natural conclusion
 - `INITIAL_TEXT="Once upon a time"` (optional) - Provide the initial text to start the story
 - `VERBOSE=1` (optional) - Output the full prompt sent to each model and their raw responses
+- `HUMAN=1` (optional) - Enable interactive mode where you take turns with the AI models (with an indicator square when it's your turn)
 
 ## Features
 
@@ -62,6 +69,8 @@ You can customize the application by modifying these files:
 - Story length of up to 100 words
 - Optional story ending feature (with THE_END=1)
 - Custom story starting point (with INITIAL_TEXT)
+- Interactive mode where you can contribute words directly in the flow (with HUMAN=1)
+- Diagnostic verbose mode (with VERBOSE=1)
 - Modular architecture for easy customization
 
 ## Requirements

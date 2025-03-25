@@ -60,9 +60,33 @@ export class WordGenerator {
 
   /**
    * Uses OpenRouter API to generate the next word based on current text
+   * If the current model is human, returns null to signal human input is needed
    */
-  async generateNextWord(): Promise<string> {
+  async generateNextWord(humanWord?: string): Promise<string | null> {
     const currentModel = this.getCurrentModel();
+    
+    // If it's the human's turn and no word is provided, signal to get human input
+    if (currentModel.isHuman && !humanWord) {
+      return null;
+    }
+    
+    // If human input was provided, use it
+    if (currentModel.isHuman && humanWord) {
+      // Update the current text
+      if (this.currentText === '') {
+        // Capitalize the first word
+        humanWord = humanWord.charAt(0).toUpperCase() + humanWord.slice(1);
+        this.currentText = humanWord;
+      } else {
+        // Add space before adding the new word
+        this.currentText += ' ' + humanWord;
+      }
+      
+      // Move to the next model's turn
+      this.turn++;
+      
+      return humanWord;
+    }
     
     try {
       // Base prompt instructions
@@ -194,5 +218,12 @@ Next word:`;
    */
   getCurrentText(): string {
     return this.currentText;
+  }
+  
+  /**
+   * Directly append text to the current text
+   */
+  appendText(text: string): void {
+    this.currentText += text;
   }
 }

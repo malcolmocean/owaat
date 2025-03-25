@@ -4,6 +4,7 @@ export interface Model {
   name: string;
   id: string;
   colorFn: (text: string) => string;
+  isHuman?: boolean;
 }
 
 // Define simulated models with their display colors
@@ -15,3 +16,11 @@ export const models: Model[] = [
   { name: 'Llama', id: 'meta-llama/llama-3-70b-instruct', colorFn: chalk.red },
   { name: 'Gemini', id: 'google/gemini-pro', colorFn: chalk.magenta },
 ];
+
+// Human model for interactive mode
+export const humanModel: Model = {
+  name: 'Human',
+  id: 'human',
+  colorFn: chalk.bold.blue,
+  isHuman: true,
+};
