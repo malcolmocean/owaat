@@ -43,6 +43,9 @@ HUMAN=1 npm run start
 
 # Combine multiple options
 HUMAN=1 THE_END=1 INITIAL_TEXT="The spaceship landed" npm run start
+
+# Add a delay between AI model turns for a more dramatic effect
+DELAY=1000 npm run start
 ```
 
 ## Configuration
@@ -59,6 +62,7 @@ You can customize the application by modifying these files:
 - `INITIAL_TEXT="Once upon a time"` (optional) - Provide the initial text to start the story
 - `VERBOSE=1` (optional) - Output the full prompt sent to each model and their raw responses
 - `HUMAN=1` (optional) - Enable interactive mode where you take turns with the AI models (just press space to submit your word when you see the blue square indicator)
+- `DELAY=800` (optional) - Set the delay in milliseconds between AI model turns (default: 0, no delay)
 
 ## Features
 

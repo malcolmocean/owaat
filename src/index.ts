@@ -57,7 +57,7 @@ async function getHumanWordWithSpace(): Promise<string> {
 
 // Configuration
 const MAX_WORD_COUNT = 100; // Maximum number of words to generate
-const DELAY_MS = 800;  // Delay between words in milliseconds
+const DELAY_MS = process.env.DELAY ? parseInt(process.env.DELAY) : 0;  // Delay in milliseconds (default: no delay)
 const ENABLE_THE_END = process.env.THE_END === '1';
 const INITIAL_TEXT = process.env.INITIAL_TEXT || '';
 const VERBOSE = process.env.VERBOSE === '1';
