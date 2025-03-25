@@ -34,17 +34,25 @@ Always check for OPENROUTER_API_KEY in .env before making API calls.
    - User-defined starting text (INITIAL_TEXT)
    - Verbose mode for debugging/transparency (VERBOSE=1)
    - Fallback mechanism when models fail
+   - Human mode allowing users to contribute words (HUMAN=1)
 
 3. **Technical Implementation**:
    - OpenRouter API for accessing multiple LLMs
    - Class-based structure that maintains state between generations
    - Careful prompt engineering to get useful single-word responses
    - Environment variables for configuration
+   - Interactive terminal input handling with the keypress library
 
 4. **Design Decisions**:
    - Preferring model-generated content over fallback word lists
    - Allowing punctuation where grammatically appropriate
    - Handling failures by trying other available models
+   - Special considerations for human input display and processing
+
+5. **Bugs and Pitfalls**:
+   - String vs null handling in JavaScript concatenation can cause unexpected behavior
+   - Need to carefully handle punctuation in user input to avoid formatting issues
+   - Raw terminal input handling requires careful management of control characters and display
 
 ### About Effective Collaboration
 1. **Following Specific Directions**:
@@ -62,12 +70,15 @@ Always check for OPENROUTER_API_KEY in .env before making API calls.
    - Add optional features rather than changing core functionality
    - Keep environmental configurations flexible using environment variables
 
-4. **Documentation**:
-   - Keep README updated with new features and options
-   - Provide clear examples of different usage patterns
-   - Document configuration options thoroughly
+4. **Debugging Approach**:
+   - Think deeply about root causes rather than applying quick fixes
+   - Track variables through their full lifecycle across multiple files
+   - Consider implicit type conversions and edge cases
+   - Reproduce the user's exact conditions when testing fixes
+   - Pay special attention to null/undefined values in string operations
 
 5. **Code Organization**:
    - Keep related functionality together
    - Use clear variable names
    - Maintain consistent coding patterns
+   - Ensure proper null/undefined value handling
