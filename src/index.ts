@@ -3,25 +3,33 @@
 import chalk from 'chalk';
 import { models } from './models';
 import { WordGenerator } from './generator';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Configuration
-const WORD_COUNT = 30; // Total number of words to generate
+const MAX_WORD_COUNT = 100; // Maximum number of words to generate
 const DELAY_MS = 800;  // Delay between words in milliseconds
+const ENABLE_THE_END = process.env.THE_END === '1';
 
 /**
  * Main function to run the one-word-at-a-time generator
  */
 async function main() {
-  console.log(chalk.bold('One Word At A Time - OpenRouter Edition'));
+  console.log(chalk.bold('One Word At A Time'));
   console.log(chalk.dim('Each model contributes one word to build a collaborative story.'));
-  console.log(chalk.dim('Using various models from OpenRouter.ai'));
+  if (ENABLE_THE_END) {
+    console.log(chalk.dim('Models can end the story with "THE END." when appropriate.'));
+  }
   console.log();
   
-  // Display the models with their colors
-  console.log(chalk.bold('Models:'));
-  models.forEach(model => {
-    console.log(`${model.colorFn('■')} ${model.name}`);
+  // Display the models with their colors on one line
+  process.stdout.write(chalk.bold('Models: '));
+  models.forEach((model, index) => {
+    process.stdout.write(`${model.colorFn('■')} ${model.name}${index < models.length - 1 ? '    ' : ''}`);
   });
+  console.log();
   console.log();
   
   // Shuffle the models array to randomize which model goes first
@@ -34,12 +42,22 @@ async function main() {
   console.log(chalk.bold('Generated Story:'));
   process.stdout.write(''); // Start a new line
   
-  for (let i = 0; i < WORD_COUNT; i++) {
+  let wordCount = 0;
+  let isStoryEnded = false;
+  
+  while (wordCount < MAX_WORD_COUNT && !isStoryEnded) {
     const currentModel = generator.getCurrentModel();
     const nextWord = await generator.generateNextWord();
     
-    // Display the word with the model's color
-    process.stdout.write(currentModel.colorFn(nextWord + ' '));
+    // Check if the story is ending
+    if (nextWord === 'THE END.') {
+      isStoryEnded = true;
+      process.stdout.write(currentModel.colorFn(nextWord));
+    } else {
+      // Display the word with the model's color
+      process.stdout.write(currentModel.colorFn(nextWord + ' '));
+      wordCount++;
+    }
     
     // Add a small delay for a more interactive experience
     await new Promise(resolve => setTimeout(resolve, DELAY_MS));
