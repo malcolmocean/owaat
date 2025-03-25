@@ -59,7 +59,7 @@ export class WordGenerator {
     
     try {
       // Construct a prompt asking for a single word continuation
-      const prompt = `Continue the following text with ONLY ONE SINGLE WORD. You may include appropriate punctuation if needed (like commas, periods, etc.) but no more than one word. The word should make sense in the context of the story.
+      const prompt = `Continue the following text with ONLY ONE SINGLE WORD as it would naturally appear in the sentence. Include ONLY punctuation that would be PART of the sentence structure - like commas, periods, quote marks, etc. only if grammatically needed at this point in the sentence. Do not add any explanatory text or extra words.
       
 Current text: "${this.currentText}"
 
