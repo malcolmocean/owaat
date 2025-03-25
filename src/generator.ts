@@ -5,9 +5,10 @@ import * as dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-// Get API key from environment variables
+// Get environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const ENABLE_THE_END = process.env.THE_END === '1';
+const VERBOSE = process.env.VERBOSE === '1';
 
 if (!OPENROUTER_API_KEY) {
   console.error('Error: OPENROUTER_API_KEY is not set in the .env file');
@@ -64,35 +65,48 @@ export class WordGenerator {
     const currentModel = this.getCurrentModel();
     
     try {
-      // Construct a prompt asking for a single word continuation
-      let prompt = `Continue the following text with ONLY ONE SINGLE WORD as it would naturally appear in the sentence. Include ONLY punctuation that would be PART of the sentence structure - like commas, periods, quote marks, etc. only if grammatically needed at this point in the sentence. Do not add any explanatory text or extra words.
-      
-Current text: "${this.currentText}"
-
-Next word:`;
+      // Base prompt instructions
+      let instructions = `Continue the following text with ONLY ONE SINGLE WORD as it would naturally appear in the sentence. Include ONLY punctuation that would be PART of the sentence structure - like commas, periods, quote marks, etc. only if grammatically needed at this point in the sentence. Do not add any explanatory text or extra words.`;
       
       // Add THE END instruction if enabled
       if (ENABLE_THE_END) {
-        prompt = `Continue the following text with ONLY ONE SINGLE WORD as it would naturally appear in the sentence. Include ONLY punctuation that would be PART of the sentence structure - like commas, periods, quote marks, etc. only if grammatically needed at this point in the sentence. Do not add any explanatory text or extra words.
-
-If you think the story has reached a natural conclusion, you may respond with exactly "THE END." to finish the story.
+        instructions += `\n\nIf you think the story has reached a natural conclusion, you may respond with exactly "THE END." to finish the story.`;
+      }
       
-Current text: "${this.currentText}"
+      // Construct the full prompt
+      const prompt = `${instructions}
+      
+Current text:
+${this.currentText}
 
 Next word:`;
-      }
 
+      // Prepare the request payload
+      const payload = {
+        model: currentModel.id,
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 10, // Limit the response size
+        temperature: 0.7,
+      };
+      
+      // Log the prompt in verbose mode
+      if (VERBOSE) {
+        console.log('\n');
+        console.log('=====================================================');
+        console.log(`Model: ${currentModel.name} (${currentModel.id})`);
+        console.log(`THE_END mode: ${ENABLE_THE_END ? 'Enabled' : 'Disabled'}`);
+        console.log('-----------------------------------------------------');
+        console.log('Prompt:');
+        console.log(prompt);
+        console.log('-----------------------------------------------------');
+      }
+      
       // Call the OpenRouter API
       const response = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model: currentModel.id,
-          messages: [
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 10, // Limit the response size
-          temperature: 0.7,
-        },
+        payload,
         {
           headers: {
             'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
@@ -101,6 +115,23 @@ Next word:`;
           }
         }
       );
+      
+      // Log the response in verbose mode
+      if (VERBOSE) {
+        console.log('Response:');
+        if (response.data.choices && response.data.choices.length > 0) {
+          console.log(`Raw response: "${response.data.choices[0].message.content}"`);
+        } else {
+          console.log('No content returned');
+        }
+        
+        // Show token usage if available
+        if (response.data.usage) {
+          console.log(`Tokens: ${response.data.usage.prompt_tokens} prompt, ${response.data.usage.completion_tokens} completion, ${response.data.usage.total_tokens} total`);
+        }
+        
+        console.log('=====================================================');
+      }
 
       // Extract the completion text from the response
       let completionText = '';
@@ -110,6 +141,11 @@ Next word:`;
       
       // Check for "THE END." marker if enabled
       if (ENABLE_THE_END && completionText.trim() === "THE END.") {
+        // Log the end detection in verbose mode
+        if (VERBOSE) {
+          console.log('Detected "THE END." response - story will end');
+        }
+        
         // Add "THE END." to the current text
         this.currentText += " THE END.";
         return "THE END.";
@@ -117,6 +153,11 @@ Next word:`;
       
       // Extract a single word from the completion
       let nextWord = this.extractWord(completionText);
+      
+      // Log the extracted word in verbose mode
+      if (VERBOSE) {
+        console.log(`Extracted word: "${nextWord}"`);
+      }
       
       // Update the current text
       if (this.currentText === '') {

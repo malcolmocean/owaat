@@ -13,6 +13,7 @@ const MAX_WORD_COUNT = 100; // Maximum number of words to generate
 const DELAY_MS = 800;  // Delay between words in milliseconds
 const ENABLE_THE_END = process.env.THE_END === '1';
 const INITIAL_TEXT = process.env.INITIAL_TEXT || '';
+const VERBOSE = process.env.VERBOSE === '1';
 
 /**
  * Main function to run the one-word-at-a-time generator
@@ -23,7 +24,9 @@ async function main() {
   if (ENABLE_THE_END) {
     console.log(chalk.dim('Models can end the story with "THE END." when appropriate.'));
   }
-  console.log();
+  if (VERBOSE) {
+    console.log(chalk.dim('VERBOSE mode: Showing full prompts and responses.'));
+  }
   
   // Display the models with their colors on one line
   process.stdout.write(chalk.bold('Models: '));

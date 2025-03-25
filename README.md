@@ -34,6 +34,9 @@ THE_END=1 npm run start
 
 # Combine options
 INITIAL_TEXT="In a galaxy far, far away" THE_END=1 npm run start
+
+# Run in verbose mode to see prompts and responses
+VERBOSE=1 npm run start
 ```
 
 ## Configuration
@@ -48,6 +51,7 @@ You can customize the application by modifying these files:
 - `OPENROUTER_API_KEY` (required) - Your API key for accessing the models
 - `THE_END=1` (optional) - Enable models to end the story with "THE END." when they think it has reached a natural conclusion
 - `INITIAL_TEXT="Once upon a time"` (optional) - Provide the initial text to start the story
+- `VERBOSE=1` (optional) - Output the full prompt sent to each model and their raw responses
 
 ## Features
 
