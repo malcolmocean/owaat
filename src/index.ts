@@ -4,11 +4,56 @@ import chalk from 'chalk';
 import { models, humanModel } from './models';
 import { WordGenerator } from './generator';
 import * as dotenv from 'dotenv';
-import * as readlineSync from 'readline-sync';
 const notifier = require('node-notifier');
+const keypress = require('keypress');
 
 // Load environment variables
 dotenv.config();
+
+// Function to get human input with space key as submission
+async function getHumanWordWithSpace(): Promise<string> {
+  return new Promise((resolve) => {
+    // Make stdin a raw device
+    process.stdin.setRawMode!(true);
+    process.stdin.resume();
+    
+    // Make `process.stdin` emit "keypress" events
+    keypress(process.stdin);
+    
+    let wordBuffer = '';
+    
+    // Listen for keypress events
+    process.stdin.on('keypress', function onKeypress(ch, key) {
+      // Exit on Ctrl-C
+      if (key && key.ctrl && key.name === 'c') {
+        process.stdin.setRawMode!(false);
+        process.stdin.pause();
+        process.stdin.removeListener('keypress', onKeypress);
+        process.exit();
+      }
+      
+      // Space or Enter submits the word
+      if (key && (key.name === 'space' || key.name === 'return')) {
+        process.stdin.setRawMode!(false);
+        process.stdin.pause();
+        process.stdin.removeListener('keypress', onKeypress);
+        resolve(wordBuffer.trim());
+      } 
+      // Backspace removes the last character
+      else if (key && key.name === 'backspace') {
+        if (wordBuffer.length > 0) {
+          wordBuffer = wordBuffer.slice(0, -1);
+          process.stdout.write('\b \b'); // Erase the last character
+        }
+      } 
+      // Add character to word buffer and echo it
+      else if (ch && ch.length === 1) {
+        wordBuffer += ch;
+        process.stdout.write(ch);
+      }
+    });
+  });
+}
 
 // Configuration
 const MAX_WORD_COUNT = 100; // Maximum number of words to generate
@@ -101,11 +146,8 @@ async function main() {
         });
       }
       
-      // Get human input directly
-      const humanWord = readlineSync.question('', {
-        limit: /^.+$/,
-        limitMessage: 'Please enter a word'
-      }).trim();
+      // Get human input directly with space key submission
+      const humanWord = await getHumanWordWithSpace();
       
       let processedWord = humanWord;
       
@@ -126,16 +168,43 @@ async function main() {
           generator.appendText(" THE END.");
         }
         
-        // Update display
-        process.stdout.write('\b\b'); // Remove the blue square
+        // Update display - erase input and show THE END
+        process.stdout.write('\b\b'); // Remove the square
+        
+        // Erase any existing input (overwrite with spaces)
+        for (let i = 0; i < humanWord.length; i++) {
+          process.stdout.write('\b'); // Move cursor back
+        }
+        for (let i = 0; i < humanWord.length; i++) {
+          process.stdout.write(' '); // Overwrite with spaces
+        }
+        for (let i = 0; i < humanWord.length; i++) {
+          process.stdout.write('\b'); // Move cursor back again
+        }
+        
+        // Show THE END with color
         process.stdout.write(humanModel.colorFn('THE END.'));
         isStoryEnded = true;
       } else {
         // Send the human word to the generator and get processed word back
         nextWord = await generator.generateNextWord(processedWord);
         
-        // Update display - remove the blue square and show the word
-        process.stdout.write('\b\b'); // Remove the blue square
+        // Update display - replace the blue square and typed word with properly formatted word
+        // First delete the blue square and any typed characters
+        process.stdout.write('\b\b'); // Remove the square
+        
+        // Erase any existing input (overwrite with spaces)
+        for (let i = 0; i < humanWord.length; i++) {
+          process.stdout.write('\b'); // Move cursor back
+        }
+        for (let i = 0; i < humanWord.length; i++) {
+          process.stdout.write(' '); // Overwrite with spaces
+        }
+        for (let i = 0; i < humanWord.length; i++) {
+          process.stdout.write('\b'); // Move cursor back again
+        }
+        
+        // Show the word with color
         process.stdout.write(humanModel.colorFn(nextWord + ' '));
         wordCount++;
       }
