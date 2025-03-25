@@ -23,8 +23,17 @@ echo "OPENROUTER_API_KEY=your_api_key_here" > .env
 ## Usage
 
 ```bash
-# Run the application
+# Run with default settings
 npm run start
+
+# Run with custom initial text
+INITIAL_TEXT="Once upon a time" npm run start
+
+# Run with THE_END option enabled
+THE_END=1 npm run start
+
+# Combine options
+INITIAL_TEXT="In a galaxy far, far away" THE_END=1 npm run start
 ```
 
 ## Configuration
@@ -38,6 +47,7 @@ You can customize the application by modifying these files:
 
 - `OPENROUTER_API_KEY` (required) - Your API key for accessing the models
 - `THE_END=1` (optional) - Enable models to end the story with "THE END." when they think it has reached a natural conclusion
+- `INITIAL_TEXT="Once upon a time"` (optional) - Provide the initial text to start the story
 
 ## Features
 
@@ -47,6 +57,7 @@ You can customize the application by modifying these files:
 - Appropriate punctuation in the generated story
 - Story length of up to 100 words
 - Optional story ending feature (with THE_END=1)
+- Custom story starting point (with INITIAL_TEXT)
 - Modular architecture for easy customization
 
 ## Requirements

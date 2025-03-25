@@ -19,8 +19,13 @@ export class WordGenerator {
   private turn: number = 0;
   private models: Model[];
   
-  constructor(models: Model[]) {
+  constructor(models: Model[], initialText: string = '') {
     this.models = models;
+    
+    // Set the initial text if provided
+    if (initialText) {
+      this.currentText = initialText;
+    }
   }
 
   /**

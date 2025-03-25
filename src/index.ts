@@ -12,6 +12,7 @@ dotenv.config();
 const MAX_WORD_COUNT = 100; // Maximum number of words to generate
 const DELAY_MS = 800;  // Delay between words in milliseconds
 const ENABLE_THE_END = process.env.THE_END === '1';
+const INITIAL_TEXT = process.env.INITIAL_TEXT || '';
 
 /**
  * Main function to run the one-word-at-a-time generator
@@ -35,12 +36,17 @@ async function main() {
   // Shuffle the models array to randomize which model goes first
   const shuffledModels = [...models].sort(() => Math.random() - 0.5);
   
-  // Initialize the generator with shuffled models
-  const generator = new WordGenerator(shuffledModels);
+  // Initialize the generator with shuffled models and initial text
+  const generator = new WordGenerator(shuffledModels, INITIAL_TEXT);
   
   // Generate words one at a time
   console.log(chalk.bold('Generated Story:'));
-  process.stdout.write(''); // Start a new line
+  
+  // Display initial text if provided
+  if (INITIAL_TEXT) {
+    console.log(chalk.dim(`Starting with: "${INITIAL_TEXT}"`));
+    process.stdout.write(chalk.white(INITIAL_TEXT + ' '));
+  }
   
   let wordCount = 0;
   let isStoryEnded = false;
