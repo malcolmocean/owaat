@@ -103,7 +103,10 @@ async function getHumanWordWithSpace(): Promise<string> {
 }
 
 // Configuration
-const MAX_WORD_COUNT = 100; // Maximum number of words to generate
+const DEFAULT_WORD_LIMIT = 100; // Default word limit for LLM-only games
+const MAX_WORD_COUNT = process.env.MAX_WORDS 
+  ? parseInt(process.env.MAX_WORDS) 
+  : (process.env.HUMAN === '1' ? Number.MAX_SAFE_INTEGER : DEFAULT_WORD_LIMIT); // Use MAX_WORDS env var, or unlimited for human games, or 100 for LLM-only
 const DELAY_MS = process.env.DELAY ? parseInt(process.env.DELAY) : 0;  // Delay in milliseconds (default: no delay)
 const ENABLE_THE_END = process.env.THE_END === '1';
 const INITIAL_TEXT = process.env.INITIAL_TEXT || '';

@@ -66,6 +66,7 @@ You can customize the application by modifying these files:
 - `VERBOSE=1` (optional) - Output the full prompt sent to each model and their raw responses
 - `HUMAN=1` (optional) - Enable interactive mode where you take turns with the AI models (just press space to submit your word when you see the blue square indicator)
 - `DELAY=800` (optional) - Set the delay in milliseconds between AI model turns (default: 0, no delay)
+- `MAX_WORDS=100` (optional) - Set maximum word count (default: unlimited for games with human players, 100 words for LLM-only games)
 
 ## Features
 
@@ -73,7 +74,7 @@ You can customize the application by modifying these files:
 - Each model has a distinctive color
 - Random model selection for who goes first
 - Appropriate punctuation in the generated story
-- Story length of up to 100 words
+- Configurable story length with `MAX_WORDS=100` (default: unlimited for games with human players, 100 words for LLM-only games)
 - Optional story ending feature (with THE_END=1)
 - Custom story starting point (with INITIAL_TEXT)
 - Interactive mode where you can contribute words directly in the flow with a space-to-submit interface (with HUMAN=1)
