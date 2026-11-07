@@ -14,7 +14,7 @@ export const models: Model[] = [
   { name: 'GPT-4', id: 'openai/gpt-4', colorFn: chalk.green },
   { name: 'Mistral', id: 'mistralai/mistral-large', colorFn: chalk.yellow },
   { name: 'Llama', id: 'meta-llama/llama-3-70b-instruct', colorFn: chalk.red },
-  { name: 'Gemini', id: 'google/gemini-pro', colorFn: chalk.magenta },
+  // { name: 'Gemini', id: 'google/gemini-pro', colorFn: chalk.magenta },
 ];
 
 // Human model for interactive mode
